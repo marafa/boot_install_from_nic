@@ -85,8 +85,8 @@ grub2-mkconfig -o /boot/grub/grub.cfg
 }
 
 get_files
-rpm -q grub2 > /dev/null && grub2_config
 rpm -q grub > /dev/null && grub_config
+rpm -q grub2 > /dev/null && grub2_config
 
 ##list menu entries
 #grep "submenu\|^menuentry" /boot/grub2/grub.cfg  | cut -d "'" -f2
