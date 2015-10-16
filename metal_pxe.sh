@@ -1,16 +1,16 @@
 #!/bin/sh
 
+#variables
 #kickstart host
-ks_host=192.168.0.30
+ks_host=mirror.centos.org
 #directory on kickstart host with the images for pxeboot
-dir=centos6/images/pxeboot
+hw_type=`uname -m`
+dir=centos/7/os/$hw_type/images/pxeboot
 #the kickstart file to use if no parameters found
 [ $# -eq 0 ] && ks_file=metal.ks
-if ! [ -f $1 ] 
-then
-  echo "ERROR: Kicktart file $1 not found"
-  exit 1
-fi
+network=10.200.1
+ip=$network.12
+gw=$network.1
 
 error_exit(){
 echo "FAIL: $ks_host is not serving valid files from $dir"
@@ -33,7 +33,7 @@ echo "INFO: GRUB version 1 found. Configuring"
 cat >> /boot/grub/grub.conf << EOF
 title PXE Install
         root (hd0,0)
-        kernel /pxe.vmlinuz ip=192.168.0.250 netmask=255.255.255.0 gateway=192.168.0.1 lang=en keymap=us ks=http://$ks_host/metal.ks
+        kernel /pxe.vmlinuz ip=$ip netmask=255.255.255.0 gateway=$gw lang=en keymap=us ks=http://$ks_host/metal.ks
         initrd /pxe.initrd.img
 EOF
 
@@ -49,9 +49,39 @@ echo " INFO: Setting next boot only to entry: $num"
 echo "savedefault --default=$num --once" | grub --batch
 }
 
-grub_config2(){
+grub2_config(){
 echo "INFO: GRUB version 2 found. Configuring"
-echo GRUB2 commands go here
+
+cat >> /etc/grub.d/40_custom << EOF
+#!/bin/sh
+exec tail -n +3 $0
+# This file provides an easy way to add custom menu entries.  Simply type the
+# menu entries you want to add after this comment.  Be careful not to change
+# the 'exec tail' line above.
+#
+menuentry "Install from network" {
+    set root=(hd0,0)
+    linux /pxe.vmlinuz ip=$ip netmask=255.255.255.0 gateway=$gw lang=en keymap=us ks=http://$ks_host/metal.ks
+    initrd /pxe.initrd.img
+#not sure if next line is required
+#    savedefault
+}
+EOF
+
+#modify /etc/default/grub
+#not sure if next line is required
+grep GRUB_SAVEDEFAULT /etc/default/grub > /dev/null
+[ $? -eq 0 ] || echo "GRUB_SAVEDEFAULT=true" >> /etc/default/grub
+#most important line
+sed -i 's/GRUB_DEFAULT=.*/GRUB_DEFAULT=saved/g' /etc/default/grub
+
+#how many entries in grub?
+num=`grub2-editenv list |wc -l`
+
+#tell grub to reboot to this stanza next time only
+grub2-reboot $num
+#last step; update grub
+grub2-mkconfig -o /boot/grub/grub.cfg
 }
 
 get_files
