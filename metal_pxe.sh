@@ -18,7 +18,6 @@ exit 69
 }
 
 get_files(){
-#get files
 echo " INFO: Downloading boot files"
 wget http://$ks_host/$dir/initrd.img -O /boot/pxe.initrd.img
 [ $? -eq 0 ]|| error_exit
@@ -79,7 +78,8 @@ sed -i 's/GRUB_DEFAULT=.*/GRUB_DEFAULT=saved/g' /etc/default/grub
 num=`grub2-editenv list |wc -l`
 
 #tell grub to reboot to this stanza next time only
-grub2-reboot $num
+#grub2-reboot $num
+grub2-reboot  "Install from network"
 #last step; update grub
 grub2-mkconfig -o /boot/grub/grub.cfg
 }
@@ -87,3 +87,6 @@ grub2-mkconfig -o /boot/grub/grub.cfg
 get_files
 rpm -q grub2 > /dev/null && grub2_config
 rpm -q grub > /dev/null && grub_config
+
+##list menu entries
+#grep "submenu\|^menuentry" /boot/grub2/grub.cfg  | cut -d "'" -f2
