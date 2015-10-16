@@ -60,7 +60,7 @@ exec tail -n +3 $0
 #
 menuentry "Install from network" {
     set root=(hd0,0)
-    linux /pxe.vmlinuz ip=$ip netmask=255.255.255.0 gateway=$gw lang=en keymap=us ks=http://$ks_host/metal.ks
+    linux /pxe.vmlinuz ip=$ip netmask=255.255.255.0 gateway=$gw lang=en keymap=us dns=8.8.8.8 ks=http://$ks_host/metal.ks
     initrd /pxe.initrd.img
 #not sure if next line is required
 #    savedefault
