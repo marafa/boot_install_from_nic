@@ -7,7 +7,7 @@ ks_host=mirror.centos.org
 hw_type=`uname -m`
 dir=centos/7/os/$hw_type/images/pxeboot
 #the kickstart file to use if no parameters found
-[ $# -eq 0 ] && ks_file=metal.ks
+[ $# -eq 0 ] && ks_file=https://raw.githubusercontent.com/marafa/boot_install_from_nic/master/metal.ks
 network=10.200.1
 ip=$network.12
 gw=$network.1
@@ -32,7 +32,7 @@ echo "INFO: GRUB version 1 found. Configuring"
 cat >> /boot/grub/grub.conf << EOF
 title PXE Install
         root (hd0,0)
-        kernel /pxe.vmlinuz ip=$ip netmask=255.255.255.0 gateway=$gw lang=en keymap=us dns=8.8.8.8 ks=http://$ks_host/metal.ks
+        kernel /pxe.vmlinuz ip=$ip netmask=255.255.255.0 gateway=$gw lang=en keymap=us dns=8.8.8.8 ks=$ks_file
         initrd /pxe.initrd.img
 EOF
 
@@ -60,7 +60,7 @@ exec tail -n +3 $0
 #
 menuentry "Install from network" {
     set root=(hd0,0)
-    linux /pxe.vmlinuz ip=$ip netmask=255.255.255.0 gateway=$gw lang=en keymap=us dns=8.8.8.8 ks=http://$ks_host/metal.ks
+    linux /pxe.vmlinuz ip=$ip netmask=255.255.255.0 gateway=$gw lang=en keymap=us dns=8.8.8.8 ks=$ks_file
     initrd /pxe.initrd.img
 #not sure if next line is required
 #    savedefault
