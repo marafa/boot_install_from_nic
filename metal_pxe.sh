@@ -52,6 +52,7 @@ grub2_config(){
 echo "INFO: GRUB version 2 found. Configuring"
 
 rm -rf /etc/grub.d/40_custom
+chmod +x /etc/grub.d/40_custom
 cat >> /etc/grub.d/40_custom << EOF
 #!/bin/sh
 exec tail -n +3 $0
