@@ -4,9 +4,8 @@
 install                                                                                                                                                      
 # Firewall configuration                                                                                                                                     
 firewall --enabled --ssh --service=ssh
-#repo --name="CentOS6"  --baseurl=http://mirrors.kernel.org/centos/6/os/x86_64/ --cost=1000
-repo --name="Local6"  --baseurl=http://192.168.0.31/centos6/
-#repo --name="Updates6" --baseurl=http://mirrors.kernel.org/centos/6/updates/x86_64/ 
+repo --name="CentOS7"  --baseurl=http://mirrors.kernel.org/centos/7/os/x86_64/ --cost=1000
+repo --name="Updates7" --baseurl=http://mirrors.kernel.org/centos/7/updates/x86_64/ 
 
 # Keyboard layouts
 keyboard 'us'# Reboot after installation
@@ -27,8 +26,7 @@ lang en_US
 services --disabled="avahi-daemon,iscsi,iscsid,firstboot,kdump" --enabled="network,sshd,rsyslog,tuned"
 
 # Use network installation
-#url --url="http://mirrors.kernel.org/centos/6/os/x86_64/"
-url --url="http://192.168.0.31/centos6/"
+url --url="http://mirrors.kernel.org/centos/7/os/x86_64/"
 
 # Network information
 network --onboot yes --bootproto=static --device=eth0 --gateway=192.168.0.1 --ip=192.168.0.250 --nameserver=4.2.2.2 --netmask=255.255.255.0 --hostname installing.marafa.vm
@@ -44,7 +42,7 @@ cmdline
 firstboot --disable
 
 # SELinux configuration
-selinux --disabled
+#selinux --disabled
 # Do not configure the X Window System
 skipx
 
@@ -69,38 +67,17 @@ logvol swap --name=lv_swap --vgname=vg_root --grow --size=1968 --maxsize=3936
 #-chroot /mnt/sysimage
 
 echo INFO: Installing custom packages 
-yum -y install screen vim-enhanced git screen iotop yum-presto wget virt-what http://rdo.fedorapeople.org/openstack/rdo-release.rpm ftp://ftp.muug.mb.ca/mirror/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
+yum -y install screen vim-enhanced git screen iotop yum-presto wget virt-what epel-release
 
 echo INFO: Updating 
 yum -y update
 
-echo INFO: Installing openstack-packstack 
-yum -y install openstack-packstack multitail alpine byobu htop vnstat
+#echo INFO: Installing openstack-packstack 
+#yum -y install openstack-packstack multitail alpine byobu htop vnstat
 
 echo INFO: Enabling ntp
 chkconfig ntpdate on
 chkconfig ntpd on
-
-if ! [ -f /usr/bin/git ]
-then
-        echo INFO: Installing git 
-        yum -y install git
-fi
-
-### openstack-os-tools.sh requires user intervention
-#mkdir ~/bin
-#cd ~/bin
-#echo INFO: Running GIT clone
-#/usr/bin/git clone https://github.com/marafa/openstack.git
-#cd ~/bin/openstack
-
-#echo INFO: Running openstack-os-tools.sh 
-#./openstack-os-tools.sh
-#sh /tmp/bin/openstack/./openstack-os-tools.sh
-#cd
-
-echo " INFO: Updating hosts file"
-echo -e "192.168.0.5\tnotebook.marafa.vm\tnotebook" >> /etc/hosts
 
 echo INFO: Rebooting
 reboot
