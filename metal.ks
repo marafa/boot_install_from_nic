@@ -17,7 +17,8 @@ reboot
 rootpw password
 
 # System timezone
-timezone America/New_York
+#timezone America/New_York --isUtc
+timezone Africa/Harare --isUtc
 
 # System language
 lang en_US
@@ -29,7 +30,7 @@ services --disabled="avahi-daemon,iscsi,iscsid,firstboot,kdump" --enabled="netwo
 url --url="http://mirrors.kernel.org/centos/7/os/x86_64/"
 
 # Network information
-network --onboot yes --bootproto=static --device=eth0 --gateway=192.168.0.1 --ip=192.168.0.250 --nameserver=4.2.2.2 --netmask=255.255.255.0 --hostname installing.marafa.vm
+network --onboot yes --bootproto=static --device=eno2 --gateway=10.200.1.1 --ip=10.200.1.12 --nameserver=4.2.2.2 --netmask=255.255.255.0 --hostname installing.marafa.vm
 
 # System authorization information
 auth  --useshadow  --passalgo=sha512
@@ -60,25 +61,24 @@ logvol swap --name=lv_swap --vgname=vg_root --grow --size=1968 --maxsize=3936
 
 %packages
 @core
+screen 
+vim-enhanced 
+yum-presto 
+deltarpm
+wget 
+epel-release
+ntp
 
 %post --log=/root/post-install.log
 
 #-#!/bin/bash
 #-chroot /mnt/sysimage
 
-echo INFO: Installing custom packages 
-yum -y install screen vim-enhanced git screen iotop yum-presto wget virt-what epel-release
-
-echo INFO: Updating 
-yum -y update
-
-#echo INFO: Installing openstack-packstack 
-#yum -y install openstack-packstack multitail alpine byobu htop vnstat
-
 echo INFO: Enabling ntp
 chkconfig ntpdate on
 chkconfig ntpd on
 
+# Reboot after installation
 echo INFO: Rebooting
 reboot
 
