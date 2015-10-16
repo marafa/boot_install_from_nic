@@ -32,7 +32,7 @@ echo "INFO: GRUB version 1 found. Configuring"
 cat >> /boot/grub/grub.conf << EOF
 title PXE Install
         root (hd0,0)
-        kernel /pxe.vmlinuz ip=$ip netmask=255.255.255.0 gateway=$gw lang=en keymap=us ks=http://$ks_host/metal.ks
+        kernel /pxe.vmlinuz ip=$ip netmask=255.255.255.0 gateway=$gw lang=en keymap=us dns=8.8.8.8 ks=http://$ks_host/metal.ks
         initrd /pxe.initrd.img
 EOF
 
